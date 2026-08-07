@@ -1,4 +1,14 @@
 {
   "_comment": "Configurable job title keywords used to filter search results.",
-  "job_titles": []
+  "job_titles": [
+    "Data Scientist",
+    "AI ML Engineer",
+    "AI",
+    "ML",
+    "DL",
+    "GenAI",
+    "Generative AI",
+    "Agentic AI",
+    "NLP"
+  ]
 }

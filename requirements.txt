@@ -1,1 +1,6 @@
 # Python dependencies for jobmate-ai-v2 (langgraph, langchain-anthropic, playwright, streamlit, etc.)
+langgraph
+langchain-anthropic
+streamlit
+playwright
+python-dotenv
