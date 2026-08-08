@@ -13,9 +13,9 @@ ALREADY_HANDLED_STATUSES = {"opened", "applied"}
 
 
 def open_urls(state: GraphState) -> GraphState:
-    logger.info("open_urls")
     jobs = state.get("filtered_jobs", [])
     status = state.get("status", {})
+    logger.info("open_urls: %d filtered job(s) to consider", len(jobs))
 
     if not jobs:
         logger.info("open_urls: nothing to open (filtered_jobs is empty)")
@@ -52,6 +52,9 @@ def open_urls(state: GraphState) -> GraphState:
         if opened and job is not jobs[-1]:
             time.sleep(OPEN_DELAY_SECONDS)
 
+    logger.info(
+        "open_urls: opened %d, skipped %d already-handled", len(opened_this_run), len(skipped_already_handled)
+    )
     return {
         **state,
         "status": {

@@ -25,6 +25,7 @@ def log_result(state: GraphState) -> GraphState:
         f"Opened {len(opened)} new job(s), skipped {len(skipped)} already-handled job(s). "
         f"Current DB status breakdown for this batch: {breakdown}."
     )
+    logger.info("log_result: %s", detail)
 
     return {
         **state,

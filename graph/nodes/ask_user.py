@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def ask_user(state: GraphState) -> GraphState:
-    logger.info("ask_user")
+    logger.info("ask_user: pausing for confirmation before opening URLs")
     interrupt({"question": "Open these job URLs?"})
+    logger.info("ask_user: resumed")
     return state

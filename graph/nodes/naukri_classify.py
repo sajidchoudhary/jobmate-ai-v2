@@ -58,9 +58,9 @@ def _judge_titles(titles: list[str]) -> list[TitleJudgment]:
 
 
 def naukri_classify(state: GraphState) -> GraphState:
-    logger.info("naukri_classify")
     job_list = state.get("job_list", [])
     status = state.get("status", {})
+    logger.info("naukri_classify: %d job(s) to classify", len(job_list))
 
     try:
         keywords = _load_keywords()
@@ -72,6 +72,7 @@ def naukri_classify(state: GraphState) -> GraphState:
         return _finish(state, status, filtered, status_patch)
 
     if not keywords:
+        logger.info("naukri_classify: no keywords configured, passing all jobs through")
         status_patch = {"stage": "naukri_classify_completed", "completed": True}
         return _finish(state, status, job_list, status_patch)
 
@@ -82,6 +83,10 @@ def naukri_classify(state: GraphState) -> GraphState:
             matched_indices.append(i)
         else:
             excluded_indices.append(i)
+
+    logger.info(
+        "naukri_classify: regex matched=%d excluded=%d", len(matched_indices), len(excluded_indices)
+    )
 
     if not excluded_indices:
         filtered = [job_list[i] for i in matched_indices]
@@ -106,9 +111,11 @@ def naukri_classify(state: GraphState) -> GraphState:
     llm_confirmed_indices = {
         excluded_indices[j.index] for j in judgments if j.relevant and 0 <= j.index < len(excluded_indices)
     }
+    logger.info("naukri_classify: LLM pass confirmed %d additional job(s)", len(llm_confirmed_indices))
 
     keep_indices = set(matched_indices) | llm_confirmed_indices
     filtered = [job_list[i] for i in sorted(keep_indices)]
+    logger.info("naukri_classify: %d job(s) kept after classification", len(filtered))
     status_patch = {"stage": "naukri_classify_completed", "completed": True}
     return _finish(state, status, filtered, status_patch)
 

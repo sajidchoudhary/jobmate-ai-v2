@@ -61,4 +61,5 @@ def parse_query(state: GraphState) -> GraphState:
     if extracted.sort_by is not None:
         filters["sort_by"] = extracted.sort_by
 
+    logger.info("parse_query: extracted filters=%r", filters)
     return {**state, "filters": filters}

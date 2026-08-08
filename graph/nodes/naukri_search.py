@@ -125,6 +125,7 @@ def naukri_search(state: GraphState) -> GraphState:
     filters = state.get("filters", {})
     pages_requested = filters.get("pages", 3)
     url = _build_search_url(filters)
+    logger.info("naukri_search: url=%r pages_requested=%d", url, pages_requested)
 
     jobs: list[Job] = []
     try:
@@ -137,10 +138,13 @@ def naukri_search(state: GraphState) -> GraphState:
                 _apply_page_interactions(page, filters)
 
                 for page_num in range(1, pages_requested + 1):
-                    jobs.extend(_extract_jobs_from_page(page))
+                    page_jobs = _extract_jobs_from_page(page)
+                    logger.info("naukri_search: page %d yielded %d job(s)", page_num, len(page_jobs))
+                    jobs.extend(page_jobs)
                     if page_num == pages_requested:
                         break
                     if not _go_to_next_page(page):
+                        logger.info("naukri_search: no next page after page %d, stopping early", page_num)
                         break
             finally:
                 browser.close()
@@ -154,4 +158,5 @@ def naukri_search(state: GraphState) -> GraphState:
             "status": {**status, "stage": "naukri_search_failed", "errors": errors},
         }
 
+    logger.info("naukri_search: collected %d job(s) total", len(jobs))
     return {**state, "job_list": jobs}
